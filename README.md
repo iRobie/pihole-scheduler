@@ -19,12 +19,7 @@ What I want:
 * Use an unfiltered DNS provider for the third option
 
 ## Setup
-First, find the timezone that your pihole is in:
-```
-date
-```
-
-Next, record your current Pihole settings:
+First, record your current Pihole settings:
 ```
 cat /etc/pihole/setupVars.conf
 ```
@@ -42,12 +37,13 @@ pihole -a setdns 208.67.222.222,208.67.220.220 domain-needed bogus-priv no-dnsse
 
 Then, add those settings to a cron job:
 ```
-sudo crontab -e
+crontab -e
 ## Locked down internet
-0 1 * * * pihole -a setdns 208.67.222.222,208.67.220.220 domain-needed bogus-priv no-dnssec
+0 1 * * * PATH="$PATH:/usr/local/bin/" pihole  -a setdns 208.67.222.222,208.67.220.220 domain-needed bogus-priv no-dnssec
 
 ## Open the internet
-0 4 * * * pihole -a setdns 8.8.8.8,8.8.4.4 domain-needed bogus-priv no-dnssec
+0 4 * * * PATH="$PATH:/usr/local/bin/" pihole  -a setdns 8.8.8.8,8.8.4.4 domain-needed bogus-priv no-dnssec
+
 ```
 
 The above example runs at 6pm PDT, sets the upstream DNS to OpenDNS with "never forward non-FQDNs" and "never forward reverse lookups for private IP ranges" enabled. At 9pm PDT, it sets upsteam DNS to Google.
@@ -56,10 +52,13 @@ The above example runs at 6pm PDT, sets the upstream DNS to OpenDNS with "never 
 ## Troubleshooting
 Verify crontab settings:
 ```
-## Test timezone conversion
-sudo crontab -e
+## Get current date
+date
+
+## Edit crontab for a minute or two in the future
+crontab -e
 54 16 * * * date >> /home/pi/test.txt
 
 ## Verify crontab worked
-cat /home/pi/test
+cat /home/pi/test.txt
 ```
